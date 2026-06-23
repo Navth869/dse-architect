@@ -1,0 +1,15 @@
+# Python virtual environment
+backend/venv/
+backend/.venv/
+__pycache__/
+*.pyc
+backend/temp_files/
+
+# Frontend dependencies
+frontend/node_modules/
+frontend/dist/
+
+# Local environment variables and system junk
+.env
+.DS_Store
+Thumbs.db
