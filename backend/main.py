@@ -21,6 +21,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
 # Temp storage for processing files
 TEMP_DIR = "temp_files"
 os.makedirs(TEMP_DIR, exist_ok=True)
