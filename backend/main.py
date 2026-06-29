@@ -9,6 +9,7 @@ from typing import List, Dict, Any
 # Import your existing modules
 from processor import DSEExtractor
 from pdf_generator import PaperGenerator
+from config import settings
 
 app = FastAPI(title="DSE Architect API")
 
@@ -27,7 +28,7 @@ async def health_check():
     return {"status": "ok"}
 
 # Temp storage for processing files
-TEMP_DIR = "temp_files"
+TEMP_DIR = settings.TEMP_DIR
 os.makedirs(TEMP_DIR, exist_ok=True)
 
 # In-memory storage for active compilation tasks
