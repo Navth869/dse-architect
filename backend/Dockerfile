@@ -32,5 +32,5 @@ COPY . /app
 
 EXPOSE 8000
 
-# Default command runs Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Use shell interpolation so APP_HOST/APP_PORT can be set at runtime via env
+CMD ["sh", "-c", "uvicorn main:app --host ${APP_HOST:-0.0.0.0} --port ${APP_PORT:-8000}"]
