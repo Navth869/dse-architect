@@ -1,82 +1,82 @@
-# DSE Spatial Architect 🚀
+# DSE Spatial Architect
 
-An advanced, full-stack WYSIWYG workspace designed to automate the geometric extraction, spatial packing, and print-safe compilation of examination question booklets and marking schemes. 
+A full-stack WYSIWYG workspace for extracting exam question/answer blocks from PDFs, arranging layout slots, and compiling print-safe output.
 
-Built specifically to parse structured documents (like Hong Kong DSE exam formats), handle fluid UI canvas transformations, and enforce pixel-perfect physical dimensions across headless PDF generators.
+## Stack
 
----
+- Frontend: React + Vite + Tailwind
+- Backend: FastAPI + PyMuPDF + WeasyPrint + Jinja2
+- Runtime: Docker Compose (image-based for both services)
 
-## 🏗️ System Architecture
+## Current Docker Setup
 
-The platform runs on a modern decoupled Client-Server architecture:
-* **Frontend Dashboard:** React, Vite, Tailwind CSS, Lucide Icons. Features an interactive millimeter grid canvas with live First-Fit Decreasing (FFD) layout processing and real-time bounding overflow re-classification loops.
-* **Backend Engine:** FastAPI, PyMuPDF (`fitz`), Jinja2, WeasyPrint. Handles multi-document coordinate normalization, lookahead vector asset grouping, and physical A4 millimeter template printing.
+This repository now runs both services from Docker images:
 
----
+- Backend image: built from backend/Dockerfile (Python 3.11 slim)
+- Frontend image: built from frontend/Dockerfile (Node 22 slim)
+- Compose file: docker-compose.yml builds both images directly (no bind mounts)
 
-## 🛠️ Repository File Structure
+## Quick Start (Recommended)
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+Services:
+
+- Frontend: http://localhost:5173
+- Backend API docs: http://localhost:8000/docs
+- Backend health check: http://localhost:8000/health
+
+Health check from terminal:
+
+```bash
+curl http://localhost:8000/health
+```
+
+Expected response:
+
+```json
+{"status":"ok"}
+```
+
+## Repository Structure
 
 ```text
 dse-architect/
-│
+├── docker-compose.yml
 ├── backend/
-│   ├── main.py              # FastAPI application (API Glue Layer)
-│   ├── processor.py         # Hierarchy-Aware PDF Geometric Extractor
-│   ├── pdf_generator.py     # Legacy block-style HTML/CSS Template Compiler
-│   └── requirements.txt     # Python backend dependencies
-│
-└── frontend/                # UI Workspace Client
-    ├── src/
-    │   ├── App.jsx          # WYSIWYG Workspace Dashboard
-    │   ├── main.jsx         # App Entry Point
-    │   └── index.css        # Tailwind Core Directives
-    ├── package.json         # Node Ecosystem Manifest
-    ├── vite.config.js       # Vite Engine Configurations
-    ├── tailwind.config.js   # Style Build Configurations
-    └── postcss.config.js    # Pre-processor Bridge Configurations
+│   ├── Dockerfile
+│   ├── main.py
+│   ├── processor.py
+│   ├── pdf_generator.py
+│   └── requirements.txt
+└── frontend/
+        ├── Dockerfile
+        ├── index.html
+        ├── package.json
+        ├── package-lock.json
+        ├── vite.config.js
+        ├── tailwind.config.js
+        ├── postcss.config.js
+        └── src/
+                ├── App.jsx
+                ├── main.jsx
+                └── index.css
+```
 
+## API Endpoints
 
-⚡ Local Setup & Execution Guide
-To operate this application locally, you must run both runtime servers concurrently in separate terminal panels.
+- GET /health
+    - Service liveness endpoint
+- POST /api/extract
+    - Upload question/answer PDFs and extract question units
+- POST /api/compile
+    - Compile arranged layout JSON into output PDF
 
-1. Backend Service Setup (Python)
-Navigate to the backend directory, construct a clean execution sandbox, and install dependencies:
+## Notes
 
-Bash
-cd backend
-python -m venv venv
-
-# Activation for Windows PowerShell:
-.\venv\Scripts\Activate.ps1
-# Activation for Mac/Linux:
-source venv/bin/activate
-
-# Install Core Engine Packages
-python -m pip install -r requirements.txt
-Start the local Uvicorn development server:
-
-Bash
-python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
-The API engine is active at http://127.0.0.1:8000. Interactive documentation is available at /docs.
-
-2. Frontend Dashboard Setup (Node.js)
-Open a new terminal session, navigate to the frontend folder, install dependencies, and spin up Vite:
-
-Bash
-cd frontend
-
-# Run script bypass for Windows machines if execution policies block local node script launches
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-
-# Install and start client
-npm install
-npm run dev
-The workspace interface will become active at http://localhost:5173.
-
-💡 Technical Implementation Highlights
-Epsilon Boundary Correction: Employs an exact tolerance calculation limit (currentSum + neededHeight <= 1.01) inside the UI layout hook to neutralize floating-point roundoff errors and eliminate browser lockup loop states.
-
-Print-Safe Layout Fallbacks: Abandons unstable headless flex configurations in favor of standard traditional block centering rules with explicit millimeter presets (width: 210mm; height: 297mm;) to guarantee proportional rendering across headless engines like WeasyPrint.
-
-Coordinate Synchronization: Matches page indices and lookahead clipping regions between disparate Question and Answer document inputs dynamically.
-
+- GET / on backend may return 404; use /health or /docs for backend checks.
+- Docker Compose may warn that version is obsolete in docker-compose.yml. This is a warning and does not block startup.
